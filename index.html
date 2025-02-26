@@ -41,6 +41,7 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: none; /* Initially hidden */
     position: relative;
+    background: white; /* Ensure background is white */
   }
   .title {
     text-align: center;
@@ -79,6 +80,7 @@
   }
   .image-container img {
     max-width: 100%;
+    max-height: 150mm; /* Limit image height to fit in one page */
     height: auto;
     cursor: move;
   }
@@ -252,12 +254,27 @@
   // Download PDF
   function downloadPDF() {
     const element = document.getElementById('a4Page');
-    html2pdf(element, {
-      margin: 10,
+    const opt = {
+      margin: 0, // No margin
       filename: 'exam_details.pdf',
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        logging: true,
+        allowTaint: true,
+      },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // Remove border and shadow for PDF
+    element.style.border = 'none';
+    element.style.boxShadow = 'none';
+
+    html2pdf().set(opt).from(element).save().then(() => {
+      // Restore border and shadow after PDF generation
+      element.style.border = '1pt solid black';
+      element.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
     });
   }
 </script>
